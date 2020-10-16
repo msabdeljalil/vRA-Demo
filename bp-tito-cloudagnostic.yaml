@@ -1,6 +1,6 @@
 formatVersion: 1
 name: bp-tito-cloudagnostic
-version: 1.5
+version: 3
 inputs:
   application:
     type: string
