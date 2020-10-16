@@ -1,0 +1,286 @@
+formatVersion: 1
+name: bp-tito-cloudagnostic
+version: 1.5
+inputs:
+  application:
+    type: string
+    default: tito
+    readOnly: true
+  environment:
+    type: string
+    description: App Environment
+    default: dev
+    enum:
+      - dev
+      - test
+      - prod
+      - gcp
+      - crashnburn
+  appstack:
+    type: string
+    description: App Stack
+    default: mysql1
+    enum:
+      - mysql1
+      - mysql2
+      - mysql3
+      - mysql4
+      - mysql5
+  mapsapikey:
+    type: string
+    description: google maps api key
+    default: AIzaSyCrpIQtxT14_s_DcjAQwUa5r1p1IaTO2eQ
+  SSHkey:
+    type: string
+    description: VM SSH Key
+    default: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDB9TS3q/xMbW7K8DNs4J/sdk8N+Qf3dTbSw2iuxF7RYi4qH5ZFYujNgfXNh5Job3Vw0LQN355064sVMUoj2gqTGDKtm9ONpaRey5DJP9rNhJJxt/NRyNmwr26C5bCptuiZrczkpg8hSeJJUIp6G9isXO65i2MkuUnlGS9CWzCxapP6ZTt29UVLcDjD5Xt86FaYUltFBvrzoRAYzfypX2hPt5u5r3IyQ9LjeYiRPdIUHkoAaaHMGtj1dKZD9eCwRuPfr02PwmWDBynTsqFPpufk1kkRyh2uV+L64ElGrZhost0FsHn7QdDUXCG+19ETQTiFtFMgM0TACmSiOLXLctrL supadhyaya@supadhyaya-a01.vmware.com
+  FECount:
+    type: integer
+    default: 1
+  wavefront_proxy:
+    type: string
+    title: Wavefront proxy
+    default: TITOLoadBalancer-mcm710134-11415-1088060668.us-east-1.elb.amazonaws.com
+resources:
+  Cloud_Volume_2:
+    type: Cloud.Volume
+    metadata:
+      layoutPosition:
+        - 1
+        - 2
+    properties:
+      capacityGb: 1
+  Cloud_Volume_1:
+    type: Cloud.Volume
+    metadata:
+      layoutPosition:
+        - 1
+        - 3
+    properties:
+      capacityGb: 1
+  Cloud_LoadBalancer_1:
+    type: Cloud.LoadBalancer
+    metadata:
+      layoutPosition:
+        - 2
+        - 1
+    properties:
+      name: TITOLoadBalancer
+      appUrl: 'https://${resource.Cloud_LoadBalancer_1.address}/Tito'
+      resourceGroupName: '${input.environment == "env:test" ? "operationsaas" : ""}'
+      routes:
+        - instancePort: 80
+          instanceProtocol: HTTP
+          protocol: HTTP
+          port: 80
+      network: '${resource.Public_Cloud_Network.name}'
+      constraints:
+        - tag: '${''env:'' + to_lower(input.environment)}'
+      instances: '${resource.FrontEnd.id}'
+      internetFacing: true
+  FrontEnd:
+    type: Cloud.Machine
+    dependsOn:
+      - MySQL
+    metadata:
+      layoutPosition:
+        - 2
+        - 2
+    properties:
+      count: '${input.FECount}'
+      tags:
+        - key: application
+          value: '${input.application}'
+        - key: environment
+          value: '${input.environment}'
+      resourceGroupName: '${input.environment == "env:test" ? "operationsaas" : ""}'
+      image: ubuntu
+      flavor: small
+      remoteAccess:
+        username: ubuntu
+        authentication: publicPrivateKey
+        sshKey: '${input.SSHkey}'
+      constraints:
+        - tag: '${''env:'' + to_lower(input.environment)}'
+      cloudConfigSettings:
+        phoneHomeFailOnTimeout: false
+        phoneHomeShouldWait: false
+        phoneHomeTimeouSeconds: 600
+      cloudConfig: |
+        #cloud-config
+        # log all cloud-init process output (info & errors) to a logfile
+        output: {all: ">> /var/log/cloud-init-output.log"}
+        packages:
+         - git
+        runcmd:
+         - sudo apt install apache2 --assume-yes
+         - sudo git clone https://gitlab.com/automationbetauser/samplecreds.git
+         - sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python-pip python-dev --assume-yes
+         - sudo apt install git php libapache2-mod-php php-mysql php-curl --assume-yes
+         - su - ubuntu
+         - eval "$(ssh-agent -s)"
+         - sudo cd /home/ubuntu/.ssh/
+         - sudo cp /samplecreds/id_rsa /home/ubuntu/.ssh/.
+         - sudo chmod 400 /home/ubuntu/.ssh/id_rsa
+         - eval "$(ssh-agent -s)"
+         - ssh-add -k /home/ubuntu/.ssh/id_rsa
+         - git clone https://gitlab.com/automationbetauser/operationsaas.git
+         - sudo cd /var/www/html
+         - sudo cp -r /operationsaas/Tito /var/www/html/.
+         - sudo cd /operationsaas/Tito
+         - sudo chmod +x /operationsaas/Tito/asset/Deployment/CloudAssembly/apache/*
+         - sudo cp /operationsaas/Tito/asset/Deployment/CloudAssembly/apache/dir.conf /etc/apache2/mods-enabled/dir.conf
+         - sudo printf '\n export TITODBSERVER=${resource.MySQL.networks[0].address}' >> /operationsaas/Tito/asset/Deployment/CloudAssembly/apache/envvars
+         - sudo printf '\n export TITODBUSERNAME=Tito' >> /operationsaas/Tito/asset/Deployment/CloudAssembly/apache/envvars
+         - sudo printf '\n export TITODBPASSWORD=VMware1!' >> /operationsaas/Tito/asset/Deployment/CloudAssembly/apache/envvars
+         - sudo printf '\n export MAPSKEY=${input.mapsapikey}' >> /operationsaas/Tito/asset/Deployment/CloudAssembly/apache/envvars 
+         - sudo cp /operationsaas/Tito/asset/Deployment/CloudAssembly/apache/envvars /etc/apache2/envvars
+         - echo ${resource.MySQL.id}
+         - echo ${resource.MySQL.networks[0].address}
+         - sudo systemctl restart apache2
+         # Wavefront config (first few lines updated (till sudo bash -c)
+         - sudo curl -sL https://wavefront.com/install >/home/ubuntu/wavefrontinstall.sh
+         - sudo chmod 777 /home/ubuntu/wavefrontinstall.sh 
+         - sudo export LC_ALL="en_US.UTF-8"
+         - sudo export LC_CTYPE="en_US.UTF-8"
+         - sudo source ~/.bashrc
+         - sudo bash -c /home/ubuntu/wavefrontinstall.sh
+         - sudo wave install --agent --proxy-address ${input.wavefront_proxy} --proxy-port 2878
+         - sudo bash /etc/telegraf/appendTags.sh
+         - sudo systemctl restart telegraf        
+        write_files:
+         - path: /etc/telegraf/telegraf.d/apache.conf
+           permissions: '0644'
+           content: |
+            [[inputs.apache]]
+            urls = ["http://0.0.0.0/server-status?auto"]
+         - path: /etc/telegraf/appendTags.sh
+           permissions: '0644'
+           content: |
+            #!/bin/sh
+            sed '/\[global_tags\]/r'<(
+            echo 'app="${input.application}"'
+            echo 'environment="${input.environment}"'
+            ) -i -- /etc/telegraf/telegraf.conf   
+      name: FE
+      networks:
+        - network: '${resource.Public_Cloud_Network.id}'
+      attachedDisks:
+        - source: '${resource.Cloud_Volume_2.id}'
+  MySQL:
+    type: Cloud.Machine
+    metadata:
+      layoutPosition:
+        - 2
+        - 3
+    properties:
+      image: ubuntu
+      flavor: small
+      tags:
+        - key: application
+          value: '${input.application}'
+        - key: environment
+          value: '${input.environment}'
+      resourceGroupName: '${input.environment == "env:test" ? "operationsaas" : ""}'
+      remoteAccess:
+        username: ubuntu
+        authentication: publicPrivateKey
+        sshKey: '${input.SSHkey}'
+      constraints:
+        - tag: '${''env:'' + to_lower(input.environment)}'
+      cloudConfig: |
+        #cloud-config
+        # log all cloud-init process output (info & errors) to a logfile
+        output: {all: ">> /var/log/cloud-init-output.log"}
+        runcmd:
+        - sudo apt-get update 
+        - sudo git clone https://gitlab.com/automationbetauser/samplecreds.git
+        - sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python-pip python-dev --assume-yes
+        - echo "mysql-server mysql-server/root_password password Tito2016" | sudo debconf-set-selections
+        - echo "mysql-server mysql-server/root_password_again password Tito2016" | sudo debconf-set-selections
+        - sudo apt-get -y install mysql-server
+        - sudo apt-get install git unzip --assume-yes
+        - su - ubuntu
+        - eval "$(ssh-agent -s)"
+        - sudo cp /samplecreds/id_rsa /home/ubuntu/.ssh/.
+        - sudo chmod 400 /home/ubuntu/.ssh/id_rsa
+        - eval "$(ssh-agent -s)"
+        - ssh-add -k /home/ubuntu/.ssh/id_rsa
+        - sudo cd /home/ubuntu/.ssh/ 
+        - ssh -o StrictHostKeyChecking=no -T git@gitlab.com
+        - git clone https://gitlab.com/automationbetauser/operationsaas.git
+        - sudo cp -r /operationsaas/Tito /.
+        - sudo cp /Tito/asset/Deployment/CloudAssembly/titodb/mysqld.cnf /etc/mysql/mysql.conf.d/mysqld.cnf
+        - sudo systemctl restart mysql.service
+        - sudo cd /Tito/asset/Deployment/CloudAssembly/titodb/
+        - sudo chmod 777 *
+        - sudo chmod +x *
+        - export MYSQL_ROOT_PASSWORD=Tito2016
+        - sudo mysql --user=root --password=$MYSQL_ROOT_PASSWORD < create-tito-db.sql
+        #wavefront
+        - 'sudo bash -c "$(curl -sL https://wavefront.com/install)" -- install --agent --proxy-address ${input.wavefront_proxy} --proxy-port 2878'
+        - sed -i 's|127.0.0.1|'$HOSTNAME'|g' /etc/telegraf/telegraf.d/mysql.conf
+        - sudo systemctl restart telegraf
+        - [bash, /etc/telegraf/appendTags.sh]
+        write_files:
+        - path: /etc/telegraf/telegraf.d/mysql.conf
+          permissions: '0644'
+          content: |
+           [[inputs.mysql]]
+            servers = ["root:Tito2016@tcp(127.0.0.1:3306)/"]
+            gather_table_schema = true
+            gather_process_list = true
+            gather_user_statistics = true
+            gather_info_schema_auto_inc = true
+            gather_innodb_metrics = true
+            gather_slave_status = true
+            gather_binary_logs = false
+            gather_table_io_waits = true
+            gather_table_lock_waits = true
+            gather_index_io_waits = true
+            gather_event_waits = true
+            gather_file_events_stats = true
+            gather_perf_events_statements = true
+            interval_slow = "30m"
+            table_schema_databases = []
+
+           [[outputs.file]]
+            files = ["stdout"]
+        - path: /etc/telegraf/appendTags.sh
+          permissions: '0644'
+          content: |
+            #!/bin/sh
+            sed '/\[global_tags\]/r'<(
+            echo 'app="${input.application}"'
+            echo 'environment="${input.environment}"'
+            ) -i -- /etc/telegraf/telegraf.conf
+      networks:
+        - name: '${Private_Cloud_Network.name}'
+          network: '${resource.Private_Cloud_Network.id}'
+      name: DB
+      attachedDisks:
+        - source: '${resource.Cloud_Volume_1.id}'
+  Public_Cloud_Network:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 3
+        - 0
+    properties:
+      name: PublicCloudNetwork
+      networkType: existing
+      constraints:
+        - tag: 'type:public-net'
+        - tag: '${''env:'' + to_lower(input.environment)}'
+  Private_Cloud_Network:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 4
+        - 0
+    properties:
+      name: PrivateCloudNetwork
+      networkType: existing
+      constraints:
+        - tag: 'type:isolated-net'
+        - tag: '${''env:'' + to_lower(input.environment)}'
