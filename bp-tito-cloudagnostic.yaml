@@ -28,7 +28,7 @@ inputs:
       - mysql5
   mapsapikey:
     type: string
-    description: google maps api key
+    description: GoogleMaps API key
     default: AIzaSyCrpIQtxT14_s_DcjAQwUa5r1p1IaTO2eQ
   SSHkey:
     type: string
@@ -108,7 +108,7 @@ resources:
         phoneHomeTimeouSeconds: 600
       cloudConfig: |
         #cloud-config
-        # log all cloud-init process output (info & errors) to a logfile
+        # Log all cloud-init process output (info & errors) to a logfile.
         output: {all: ">> /var/log/cloud-init-output.log"}
         packages:
          - git
