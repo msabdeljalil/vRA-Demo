@@ -1,0 +1,7 @@
+{
+  "contentName": "Provider Network",
+  "uniqueId": "e1323b6f-aa49-461f-ab1d-63d48fa6b99b",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}
