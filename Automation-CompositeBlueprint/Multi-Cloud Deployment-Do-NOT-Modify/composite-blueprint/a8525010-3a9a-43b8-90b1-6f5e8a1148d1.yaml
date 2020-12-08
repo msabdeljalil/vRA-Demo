@@ -1,0 +1,162 @@
+content: |
+  formatVersion: 1
+  name: Multi-Cloud Deployment-Do-NOT-Modify
+  version: 1
+  inputs:
+    SelectCloud:
+      type: string
+      enum:
+        - Azure
+        - AWS
+        - vSphere
+      default: Azure
+    SelectCloud2:
+      type: string
+      enum:
+        - Azure
+        - AWS
+        - vSphere
+      default: AWS
+    SelectCloud3:
+      type: string
+      enum:
+        - Azure
+        - AWS
+        - vSphere
+      default: vSphere
+    hostname1:
+      type: string
+      default: azure-machine
+    hostname2:
+      type: string
+      default: aws-machine
+    hostname3:
+      type: string
+      default: vsphere-machine
+    user:
+      type: string
+      title: Username for SSH
+      description: The username you would like to have for the installation.
+      default: demouser
+    password:
+      type: string
+      pattern: '[a-z0-9A-Z@#$]+'
+      encrypted: true
+      default: VMware1!
+      title: Admin Account Password
+      description: The password you would like to use for the System.
+  resources:
+    Cloud_Machine_1:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        image: Ubuntu-16
+        flavor: Medium
+        cloudConfig: |
+          #cloud-config
+          hostname: ${input.hostname1}
+
+          packages:
+            - apache2
+
+          users:
+            - name: ${input.user}
+              sudo: ['ALL=(ALL) NOPASSWD:ALL']
+              groups: sudo
+              shell: /bin/bash
+
+          runcmd:
+            - PASS=${input.password}
+            - USER=${input.user}
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+            - service ssh reload
+        constraints:
+          - tag: '${"env:" + to_lower(input.SelectCloud)}'
+    Cloud_Machine_2:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 1
+      properties:
+        image: Ubuntu-16
+        flavor: Medium
+        cloudConfig: |
+          #cloud-config
+          hostname: ${input.hostname2}
+
+          packages:
+            - nginx
+
+          users:
+            - name: ${input.user}
+              sudo: ['ALL=(ALL) NOPASSWD:ALL']
+              groups: sudo
+              shell: /bin/bash
+
+          runcmd:
+            - PASS=${input.password}
+            - USER=${input.user}
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+            - service ssh reload
+        constraints:
+          - tag: '${"env:" + to_lower(input.SelectCloud2)}'
+    Cloud_Machine_3:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 2
+      properties:
+        image: Ubuntu-16
+        flavor: Medium
+        cloudConfig: |
+          #cloud-config
+          hostname: ${input.hostname3}
+
+          packages:
+            - nginx
+
+          users:
+            - name: ${input.user}
+              sudo: ['ALL=(ALL) NOPASSWD:ALL']
+              groups: sudo
+              shell: /bin/bash
+
+          runcmd:
+            - PASS=${input.password}
+            - USER=${input.user}
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+            - service ssh reload
+        constraints:
+          - tag: '${"env:" + to_lower(input.SelectCloud3)}'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/multi-cloud-bp/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:03.253650Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id cdac6589fae83d5de7c9a5ec24381597d9e194a9.
+- Draft blueprint updated and version 1 created from git commit id cdac6589fae83d5de7c9a5ec24381597d9e194a9.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:03.252500Z'
+createdBy: system-user
+id: a8525010-3a9a-43b8-90b1-6f5e8a1148d1
+name: Multi-Cloud Deployment-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/a8525010-3a9a-43b8-90b1-6f5e8a1148d1
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:03.253649Z'
+updatedBy: system-user
+valid: true

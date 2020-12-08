@@ -1,0 +1,123 @@
+content: |
+  formatVersion: 1
+  name: On-Demand-Net-Tags-SG-Do-NOT-Modify
+  version: 1
+  inputs: {}
+  resources:
+    web-sg:
+      type: Cloud.SecurityGroup
+      metadata:
+        layoutPosition:
+          - 0
+          - 1
+      properties:
+        securityGroupType: new
+        rules:
+          - name: https-wr
+            direction: inbound
+            protocol: TCP
+            ports: 443
+            source: any
+            access: Allow
+          - name: ssh-wr
+            direction: inbound
+            protocol: TCP
+            ports: 22
+            source: any
+            access: Deny
+        tags:
+          - key: web
+            value: https
+    Web:
+      type: Cloud.vSphere.Machine
+      metadata:
+        layoutPosition:
+          - 1
+          - 1
+      properties:
+        image: Ubuntu-18
+        flavor: medium
+        tags:
+          - key: web
+            value: apache
+        networks:
+          - network: '${resource.NSX.id}'
+            tags:
+              - key: web
+                value: apache
+            securityGroups:
+              - '${resource["web-sg"].id}'
+        constraints:
+          - tag: 'env:vsphere'
+    NSX:
+      type: Cloud.NSX.Network
+      metadata:
+        layoutPosition:
+          - 2
+          - 0
+      properties:
+        networkType: outbound
+        constraints:
+          - tag: 'net:ondemand'
+        tags:
+          - key: web
+            value: apache-mysql
+    DB:
+      type: Cloud.vSphere.Machine
+      metadata:
+        layoutPosition:
+          - 3
+          - 1
+      properties:
+        image: Ubuntu-18
+        flavor: medium
+        tags:
+          - key: db
+            value: mysql
+        networks:
+          - network: '${resource.NSX.id}'
+            tags:
+              - key: db
+                value: mysql
+            securityGroups:
+              - '${resource["db-sg"].id}'
+        constraints:
+          - tag: 'env:vsphere'
+    db-sg:
+      type: Cloud.SecurityGroup
+      metadata:
+        layoutPosition:
+          - 4
+          - 1
+      properties:
+        securityGroupType: new
+        rules:
+          - name: mysql-wr
+            direction: inbound
+            protocol: TCP
+            ports: 3306
+            source: any
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/net-ondemand/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:03.340093Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 0bdbeb05c5d5a0a1093171a1fea1cd226fd2b5e9.
+- Draft blueprint updated and version 1 created from git commit id 0bdbeb05c5d5a0a1093171a1fea1cd226fd2b5e9.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:03.339192Z'
+createdBy: system-user
+id: bd399753-7da0-49c2-9cbd-48a5783db89e
+name: On-Demand-Net-Tags-SG-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/bd399753-7da0-49c2-9cbd-48a5783db89e
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:03.340092Z'
+updatedBy: system-user
+valid: true

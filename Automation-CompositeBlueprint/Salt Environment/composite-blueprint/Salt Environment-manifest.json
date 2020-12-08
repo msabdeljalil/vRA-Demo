@@ -1,0 +1,7 @@
+{
+  "contentName": "Salt Environment",
+  "uniqueId": "6faabf72-0506-40a9-9b55-c22f9342c2ac",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

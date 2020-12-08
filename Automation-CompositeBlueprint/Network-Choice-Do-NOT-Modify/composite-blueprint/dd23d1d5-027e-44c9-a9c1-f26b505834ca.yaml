@@ -1,0 +1,87 @@
+content: |
+  formatVersion: 1
+  name: Network-Choice-Do-NOT-Modify
+  version: 1
+  inputs:
+    network:
+      type: string
+      enum:
+        - App
+        - Web
+      default: App
+  resources:
+    Web:
+      type: Cloud.vSphere.Machine
+      metadata:
+        layoutPosition:
+          - 1
+          - 1
+      properties:
+        image: Ubuntu-18
+        flavor: medium
+        tags:
+          - key: web
+            value: apache
+        networks:
+          - network: '${resource.NSX.id}'
+            tags:
+              - key: web
+                value: apache
+        constraints:
+          - tag: 'env:vsphere'
+    NSX:
+      type: Cloud.NSX.Network
+      metadata:
+        layoutPosition:
+          - 2
+          - 0
+      properties:
+        networkType: existing
+        constraints:
+          - tag: '${"net:" + to_lower(input.network)}'
+        tags:
+          - key: web
+            value: apache-mysql
+    DB:
+      type: Cloud.vSphere.Machine
+      metadata:
+        layoutPosition:
+          - 3
+          - 1
+      properties:
+        image: Ubuntu-18
+        flavor: medium
+        tags:
+          - key: db
+            value: mysql
+        networks:
+          - network: '${resource.NSX.id}'
+            tags:
+              - key: db
+                value: mysql
+        constraints:
+          - tag: 'env:vsphere'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/net-choice/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:03.312963Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 0bdbeb05c5d5a0a1093171a1fea1cd226fd2b5e9.
+- Draft blueprint updated and version 1 created from git commit id 0bdbeb05c5d5a0a1093171a1fea1cd226fd2b5e9.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:03.312176Z'
+createdBy: system-user
+id: dd23d1d5-027e-44c9-a9c1-f26b505834ca
+name: Network-Choice-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/dd23d1d5-027e-44c9-a9c1-f26b505834ca
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:03.312962Z'
+updatedBy: system-user
+valid: true

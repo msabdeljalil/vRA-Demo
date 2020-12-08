@@ -1,0 +1,7 @@
+{
+  "contentName": "Ansible-Tomcat-Do-NOT-Modify",
+  "uniqueId": "7a53466c-5717-4aa8-9fd2-fe09b40409fc",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

@@ -1,0 +1,91 @@
+content: |
+  # This blueprint will deploy a linux machine and install Tomcat on it. You can deploy to AWS or vSphere. Once the machine is deployed copy/paste the IP address into a browser to see the tomcat landing page.
+  formatVersion: 1
+  name: Ansible-Tomcat-Do-NOT-Modify
+  version: 1
+  inputs:
+    Playbooks:
+      type: string
+      enum:
+        - /etc/ansible/playbooks/tomcatandjava.yml
+    machinename:
+      type: string
+    SelectCloud:
+      type: string
+      title: Select Cloud
+      oneOf:
+        - title: AWS
+          const: 'env:aws'
+        - title: vSphere
+          const: 'env:vsphere'
+  resources:
+    Cloud_Ansible_1:
+      type: Cloud.Ansible
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        host: '${resource.Cloud_Machine_1.*}'
+        osType: linux
+        account: Field Demo Ansible OSS
+        username: root
+        privateKeyFile: /root/.ssh/id_rsa
+        playbooks:
+          provision:
+            - '${input.Playbooks}'
+        inventoryFile: /etc/ansible/hosts
+        maxConnectionRetries: 10
+        hostVariables: |
+          ansible_python_interpreter: ${input.SelectCloud == "env:aws" ? "/usr/bin/python" : ""}
+    Cloud_Machine_1:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 1
+      properties:
+        image: CentOS
+        flavor: small
+        tags:
+          - key: source
+            value: ansible
+        networks:
+          - network: '${resource.Cloud_Network_1.id}'
+            assignPublicIpAddress: '${input.SelectCloud == "env:aws" ? true : false}'
+        constraints:
+          - tag: '${input.SelectCloud}'
+    Cloud_Network_1:
+      type: Cloud.Network
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        networkType: existing
+        constraints:
+          - tag: '${input.SelectCloud}'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/ansible/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.287331Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 07ce4c1de1338f75dd672686cd0f6ebb666aaba9.
+- Draft blueprint updated and version 1 created from git commit id 07ce4c1de1338f75dd672686cd0f6ebb666aaba9.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.286452Z'
+createdBy: system-user
+id: 7a53466c-5717-4aa8-9fd2-fe09b40409fc
+name: Ansible-Tomcat-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/7a53466c-5717-4aa8-9fd2-fe09b40409fc
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.287330Z'
+updatedBy: system-user
+valid: true
