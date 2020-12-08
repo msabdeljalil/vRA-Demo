@@ -1,0 +1,52 @@
+content: |
+  name: Ent-PKS-Cluster-Do-NOT-Modify
+  version: 1
+  formatVersion: 1
+  inputs:
+    cluster-name:
+      type: string
+      title: Cluster Name
+      default: CHANGE-ME-NO-SPACES
+      description: 'This is the cluster name. It should NOT contain spaces, only dashes (ex. pks-dev-cluster)'
+    cluster-hostname:
+      type: string
+      title: Cluster Hostname
+      description: This is the DNS name for the cluster (ex. test.pks.domain.local). You will access the cluster through IP not DNS currently.
+  resources:
+    Cloud_K8S_Cluster_1:
+      type: Cloud.K8S.Cluster
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        # This is the cluster name. It should NOT contain spaces, only dashes (ex. pks-dev-cluster)
+        name: '${input.cluster-name}'
+        # This is the DNS name for the cluster (ex. test.pks.domain.local). You will access the cluster through IP not DNS currently.
+        hostname: '${input.cluster-hostname}'
+        constraints:
+          - tag: 'pks:dev'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/ent-pks/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.579312Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id f5935829046391a6f9e6fed01cce2ae4d7db65e8.
+- Draft blueprint updated and version 1 created from git commit id f5935829046391a6f9e6fed01cce2ae4d7db65e8.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.578456Z'
+createdBy: system-user
+id: eaaf0d82-fe8f-4fa4-ab56-ab14def93853
+name: Ent-PKS-Cluster-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/eaaf0d82-fe8f-4fa4-ab56-ab14def93853
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.579311Z'
+updatedBy: system-user
+valid: true

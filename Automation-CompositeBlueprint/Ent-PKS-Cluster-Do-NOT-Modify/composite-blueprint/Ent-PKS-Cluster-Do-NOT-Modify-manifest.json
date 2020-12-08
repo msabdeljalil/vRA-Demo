@@ -1,0 +1,7 @@
+{
+  "contentName": "Ent-PKS-Cluster-Do-NOT-Modify",
+  "uniqueId": "eaaf0d82-fe8f-4fa4-ab56-ab14def93853",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}
