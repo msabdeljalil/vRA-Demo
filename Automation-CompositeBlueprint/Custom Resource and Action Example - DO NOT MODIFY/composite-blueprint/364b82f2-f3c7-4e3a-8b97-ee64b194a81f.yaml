@@ -1,0 +1,83 @@
+content: |
+  ################################################################################################
+  # This Blueprint will deploy a Linux vSphere Machine and then create a folder
+  # Once deployed then you will see a custom day 2 action on the machine "Move Folder", you can choose
+  # folder name = mycrfolder. This demonstrates Custom Resource and Resource Action capabilities
+  ################################################################################################
+  formatVersion: 1
+  name: Custom Resource and Action Example - DO NOT MODIFY
+  version: 1
+  inputs:
+    MachineName:
+      type: string
+    foldername:
+      type: string
+      title: FolderName
+    parentfolder:
+      type: object
+      title: Parent Folder
+      $data: 'vro/data/inventory/VC:VmFolder'
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+  resources:
+    Custom_CreateFolder_1:
+      type: Custom.CreateFolder
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        name: '${input.foldername}'
+        parentFolder: '${input.parentfolder}'
+    Cloud_vSphere_Machine_1:
+      type: Cloud.vSphere.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 1
+      properties:
+        image: CentOS
+        cpuCount: 1
+        totalMemoryMB: 1024
+        networks:
+          - network: '${resource.Cloud_Network_1.id}'
+        constraints:
+          - tag: 'env:vsphere'
+        newName: '${input.MachineName}'
+    Cloud_Network_1:
+      type: Cloud.vSphere.Network
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        networkType: existing
+        constraints:
+          - tag: 'env:vsphere'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/custom-resource-action/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.499741Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 8733da6ee22bab39349b4d30ace14ad208bab8ba.
+- Draft blueprint updated and version 1 created from git commit id 8733da6ee22bab39349b4d30ace14ad208bab8ba.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.498526Z'
+createdBy: system-user
+id: 364b82f2-f3c7-4e3a-8b97-ee64b194a81f
+name: Custom Resource and Action Example - DO NOT MODIFY
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/364b82f2-f3c7-4e3a-8b97-ee64b194a81f
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.499740Z'
+updatedBy: system-user
+valid: true

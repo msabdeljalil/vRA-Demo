@@ -1,0 +1,55 @@
+content: |
+  name: Provider-Network-and-Load-Balancer-Do-NOT-Modify
+  formatVersion: 1
+  version: 1
+  inputs: {}
+  resources:
+    Provider-Load-Balancer:
+      type: Cloud.LoadBalancer
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        routes:
+          - protocol: HTTP
+            port: 80
+            instanceProtocol: HTTP
+            instancePort: 80
+        network: '${resource.Cloud_NSX_Network_1.id}'
+        instances: []
+        internetFacing: true
+    Cloud_NSX_Network_1:
+      type: Cloud.NSX.Network
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        networkType: outbound
+        constraints:
+          - tag: 'net:ondemand'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/provider-net-lb/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:03.567478Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 8b6a9309686f096d9cc3a6bf4f99c3a3c40597d6.
+- Draft blueprint updated and version 1 created from git commit id 8b6a9309686f096d9cc3a6bf4f99c3a3c40597d6.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:03.566765Z'
+createdBy: system-user
+id: 3eaab432-210d-4445-bafc-5809f9aae47c
+name: Provider-Network-and-Load-Balancer-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/3eaab432-210d-4445-bafc-5809f9aae47c
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:03.567477Z'
+updatedBy: system-user
+valid: true

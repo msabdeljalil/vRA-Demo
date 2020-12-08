@@ -1,0 +1,109 @@
+content: |
+  name: Salt Environment
+  version: 1
+  formatVersion: 1
+  inputs:
+    user:
+      type: string
+      title: Username for SSH
+      description: The username you would like to have for the installation.
+      default: demouser
+    password:
+      type: string
+      pattern: '[a-z0-9A-Z@#$]+'
+      encrypted: true
+      default: VMware1!
+      title: Admin Account Password
+      description: The password you would like to use for the System.
+    saltmasterhostname:
+      type: string
+      title: Salt Master Hostname
+    saltminionhostname:
+      type: string
+      title: Salt Minion Hostname
+  resources:
+    Salt-Minion:
+      type: Cloud.Machine
+      dependsOn:
+        - Salt-Master
+      properties:
+        image: Ubuntu-18
+        flavor: medium
+        constraints:
+          - tag: 'env:vsphere'
+        cloudConfig: |
+          #cloud-config
+          hostname: ${input.saltminionhostname}
+
+          users:
+            - name: ${input.user}
+              sudo: ['ALL=(ALL) NOPASSWD:ALL']
+              groups: sudo
+              shell: /bin/bash
+
+          runcmd:
+            - PASS=${input.password}
+            - USER=${input.user}
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+            - service ssh reload
+            - curl -L https://bootstrap.saltstack.com -o install_salt.sh
+            - sudo sh install_salt.sh -A ${resource.Salt-Master.address}
+        networks:
+          - network: '${resource.Cloud_Network_1.id}'
+    Salt-Master:
+      type: Cloud.Machine
+      properties:
+        image: Ubuntu-18
+        flavor: medium
+        constraints:
+          - tag: 'env:vsphere'
+        cloudConfig: |
+          #cloud-config
+          hostname: ${input.saltmasterhostname}
+          users:
+            - name: ${input.user}
+              sudo: ['ALL=(ALL) NOPASSWD:ALL']
+              groups: sudo
+              shell: /bin/bash
+
+          runcmd:
+            - PASS=${input.password}
+            - USER=${input.user}
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+            - service ssh reload
+            - curl -L https://bootstrap.saltstack.com -o install_salt.sh
+            - sudo sh install_salt.sh -M
+        networks:
+          - network: '${resource.Cloud_Network_1.id}'
+    Cloud_Network_1:
+      type: Cloud.Network
+      properties:
+        constraints:
+          - tag: 'env:vsphere'
+        networkType: existing
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/salt/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:03.604848Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 424ac4b6fd56401c59ab0e2748943bb197d9601e.
+- Draft blueprint updated and version 1 created from git commit id 424ac4b6fd56401c59ab0e2748943bb197d9601e.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:03.603521Z'
+createdBy: system-user
+id: 6faabf72-0506-40a9-9b55-c22f9342c2ac
+name: Salt Environment
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/6faabf72-0506-40a9-9b55-c22f9342c2ac
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:03.604847Z'
+updatedBy: system-user
+valid: true

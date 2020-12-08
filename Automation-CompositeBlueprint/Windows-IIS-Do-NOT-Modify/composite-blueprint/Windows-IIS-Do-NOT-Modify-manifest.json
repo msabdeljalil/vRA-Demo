@@ -1,0 +1,7 @@
+{
+  "contentName": "Windows-IIS-Do-NOT-Modify",
+  "uniqueId": "e570067a-23e3-42da-92e3-3cc5d0853c75",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

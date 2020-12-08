@@ -1,0 +1,7 @@
+{
+  "contentName": "Email-Notification-AMER",
+  "uniqueId": "sub_emailamer",
+  "contentType": "Automation-Subscription",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

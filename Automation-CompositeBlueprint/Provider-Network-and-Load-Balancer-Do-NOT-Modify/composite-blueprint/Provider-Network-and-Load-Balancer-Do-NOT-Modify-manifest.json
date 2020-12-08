@@ -1,0 +1,7 @@
+{
+  "contentName": "Provider-Network-and-Load-Balancer-Do-NOT-Modify",
+  "uniqueId": "3eaab432-210d-4445-bafc-5809f9aae47c",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

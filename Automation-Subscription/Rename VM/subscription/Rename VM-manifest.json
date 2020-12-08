@@ -1,0 +1,7 @@
+{
+  "contentName": "Rename VM",
+  "uniqueId": "sub_renamevm",
+  "contentType": "Automation-Subscription",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

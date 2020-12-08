@@ -1,0 +1,77 @@
+content: |
+  name: Windows-IIS-Do-NOT-Modify
+  version: 1
+  formatVersion: 1
+  inputs:
+    user:
+      type: string
+      title: Username for Access
+      description: The username you would like to usee for admin.
+      default: Administrator
+    password:
+      type: string
+      pattern: '[a-z0-9A-Z@#$]+'
+      encrypted: true
+      default: vRealiz3!
+      title: Admin Account Password
+      description: The password you would like to use for the ocuser account.
+  resources:
+    windowsserver:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 1
+      properties:
+        image: Windows-16
+        flavor: large
+        remoteAccess:
+          authentication: usernamePassword
+          username: '${input.user}'
+          password: '${input.password}'
+        cloudConfig: |
+          #ps1_sysnative
+            New-Item $env:SystemDrive\powershell_multipart.txt -type file -ErrorAction SilentlyContinue
+            Install-WindowsFeature -name Web-Server -IncludeManagementTools
+        constraints:
+          - tag: 'env:vsphere'
+        networks:
+          - name: '${resource.Cloud_Network_1.name}'
+            network: '${resource.Cloud_Network_1.id}'
+    Cloud_Network_1:
+      type: Cloud.Network
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        name: Field-Demo
+        networkType: existing
+        constraints:
+          - tag: 'env:vsphere'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/windows-iis/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:04.742276Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 2e9c6e93ca7e340313fc5877380c4160eb513ef7.
+- Draft blueprint updated and version 1 created from git commit id 2e9c6e93ca7e340313fc5877380c4160eb513ef7.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:04.741514Z'
+createdBy: system-user
+id: e570067a-23e3-42da-92e3-3cc5d0853c75
+name: Windows-IIS-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/e570067a-23e3-42da-92e3-3cc5d0853c75
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T15:57:53.285493Z'
+updatedBy: pbalfanz
+valid: true
+validationMessages: [
+  ]
