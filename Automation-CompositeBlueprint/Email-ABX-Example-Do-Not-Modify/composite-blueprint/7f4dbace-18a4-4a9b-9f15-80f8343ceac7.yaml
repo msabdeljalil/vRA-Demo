@@ -1,0 +1,72 @@
+content: |
+  name: Email-ABX-Example-Do-Not-Modify
+  version: 1
+  formatVersion: 1
+  inputs: {}
+  resources:
+    Cloud_Network_1:
+      type: Cloud.Network
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        networkType: existing
+        constraints:
+          - tag: 'env:aws'
+    Cloud_Machine_1:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        image: Ubuntu-16
+        flavor: medium
+        constraints:
+          - tag: 'env:aws'
+        networks:
+          - network: '${resource.Cloud_Network_1.id}'
+            assignPublicIpAddress: 1
+        cloudConfig: |
+          packages:
+           - curl
+
+          users:
+            - name: demouser
+              sudo: ['ALL=(ALL) NOPASSWD:ALL']
+              groups: sudo
+              shell: /bin/bash
+
+          runcmd:
+            - USER=demouser
+            - PASS=vRealiz3!
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+            - service ssh reload
+            - echo "Done" >> /tmp/environment.txt
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/email/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.540362Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 6044a8663d2862cea12a76725a3739ef9323dcf9.
+- Draft blueprint updated and version 1 created from git commit id 6044a8663d2862cea12a76725a3739ef9323dcf9.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.538936Z'
+createdBy: system-user
+id: 7f4dbace-18a4-4a9b-9f15-80f8343ceac7
+name: Email-ABX-Example-Do-Not-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/7f4dbace-18a4-4a9b-9f15-80f8343ceac7
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.540362Z'
+updatedBy: system-user
+valid: true

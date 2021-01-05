@@ -1,0 +1,78 @@
+content: |
+  name: Docker-Builder-Do-Not-Modify
+  version: 1
+  formatVersion: 1
+  inputs: {}
+  resources:
+    Cloud_Network_1:
+      type: Cloud.Network
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        networkType: existing
+        constraints:
+          - tag: 'env:aws'
+    Cloud_Machine_1:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        image: Ubuntu-16
+        flavor: medium
+        constraints:
+          - tag: 'env:aws'
+        networks:
+          - network: '${resource.Cloud_Network_1.id}'
+            assignPublicIpAddress: 1
+        cloudConfig: |
+          packages:
+           - curl
+
+          users:
+            - name: demouser
+              sudo: ['ALL=(ALL) NOPASSWD:ALL']
+              groups: sudo
+              shell: /bin/bash
+
+          runcmd:
+            - USER=demouser
+            - PASS=vRealiz3!
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - echo $USER:$PASS | /usr/sbin/chpasswd
+            - sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
+            - service ssh reload
+            - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+            - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+            - apt-get update
+            - apt-get install -y docker-ce
+            - usermod -aG docker demouser
+            - su - demouser
+            - echo "Done" >> /tmp/environment.txt
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/docker-builder/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.519083Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 4ceb864cc4b90bd018b4072861c6a322d26a03cb.
+- Draft blueprint updated and version 1 created from git commit id 4ceb864cc4b90bd018b4072861c6a322d26a03cb.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.518121Z'
+createdBy: system-user
+id: 1ba1a21c-efa9-4333-ad9f-67313d4aa71c
+name: Docker-Builder-Do-Not-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/1ba1a21c-efa9-4333-ad9f-67313d4aa71c
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.519083Z'
+updatedBy: system-user
+valid: true

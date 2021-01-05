@@ -1,0 +1,44 @@
+additionalActions: [
+  ]
+description: ''
+displayName: Create VM Folder
+externalType: VC:VmFolder
+id: b656c2d0-6566-47f3-ad3b-3296bd58c895
+mainActions:
+  create:
+    description: Creates a new virtual machine folder.
+    endpointLink: /resources/endpoints/9a4c5424-e278-4910-91e8-79df42f086dd
+    id: BD8080808080808080808080808080808EC380800122528313869552e41805bb1
+    name: Create virtual machine folder
+    type: vro.workflow
+  delete:
+    description: Deletes a virtual machine folder and waits for the task to complete.
+    endpointLink: /resources/endpoints/9a4c5424-e278-4910-91e8-79df42f086dd
+    id: BD80808080808080808080808080808062C180800122528313869552e41805bb1
+    name: Delete virtual machine folder
+    type: vro.workflow
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+organizationName: vra8-vidm-ga
+properties:
+  properties:
+    name:
+      title: Name of the new folder
+      type: string
+    parentFolder:
+      $data: vro/data/inventory/VC:VmFolder
+      properties:
+        id:
+          title: Reference object identifier
+          type: string
+        type:
+          title: Reference object type
+          type: string
+      title: Parent folder
+      type: object
+  required:
+  - parentFolder
+  - name
+  type: object
+providerId: a892f853-c843-49a5-80aa-4a12d1805a0f
+resourceType: Custom.CreateFolder
+status: RELEASED

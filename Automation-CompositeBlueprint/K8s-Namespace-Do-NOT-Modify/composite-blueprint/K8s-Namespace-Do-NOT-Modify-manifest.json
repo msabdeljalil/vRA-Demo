@@ -1,0 +1,7 @@
+{
+  "contentName": "K8s-Namespace-Do-NOT-Modify",
+  "uniqueId": "16b9edbe-2ddb-4c01-addf-210ca00cd549",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

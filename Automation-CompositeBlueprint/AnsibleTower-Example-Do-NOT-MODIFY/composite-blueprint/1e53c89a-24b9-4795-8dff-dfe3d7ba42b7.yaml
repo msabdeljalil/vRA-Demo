@@ -1,0 +1,68 @@
+content: |
+  formatVersion: 1
+  name: AnsibleTower-Example-Do-NOT-MODIFY
+  version: 1
+  inputs: {}
+  resources:
+    Cloud_Ansible_Tower_1:
+      type: Cloud.Ansible.Tower
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        host: '${resource.Cloud_Machine_1.*}'
+        account: Ansible Tower
+        jobTemplates:
+          provision:
+            - Hello World
+        hostVariables: |
+          example_var: 123
+        maxConnectionRetries: 10
+    Cloud_Machine_1:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 1
+      properties:
+        image: CentOS
+        flavor: small
+        networks:
+          - network: '${resource.Cloud_vSphere_Network_1.id}'
+        constraints:
+          - tag: 'env:vsphere'
+    Cloud_vSphere_Network_1:
+      type: Cloud.vSphere.Network
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        networkType: existing
+        constraints:
+          - tag: 'env:vsphere'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/ansibletower/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.432674Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 0f8a2518b10e13fb64eb63d1510f8408a8c3e4db.
+- Draft blueprint updated and version 1 created from git commit id 0f8a2518b10e13fb64eb63d1510f8408a8c3e4db.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.431739Z'
+createdBy: system-user
+id: 1e53c89a-24b9-4795-8dff-dfe3d7ba42b7
+name: AnsibleTower-Example-Do-NOT-MODIFY
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/1e53c89a-24b9-4795-8dff-dfe3d7ba42b7
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.432673Z'
+updatedBy: system-user
+valid: true

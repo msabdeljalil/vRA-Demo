@@ -1,0 +1,166 @@
+content: "# This blueprint shows various ways to enhance a blueprint via YAML with\
+  \ explanations of the various parameters                      *\n# There are comments\
+  \ throughout for your refernce.                                                \
+  \                                   *\n# You can clone this blueprint and then experiment\
+  \ a bit with YAML if you want. If you are totally new to YAML                  \
+  \     *\n# then you can visit https://yaml.org/ to get more familiar with it.  \
+  \                                                               *\n# ** PLEASE DO\
+  \ NOT MODIFY THIS BLUEPRINT >> CLONE IT!!**                                    \
+  \                                         *\n# References:                     \
+  \                                                                              \
+  \                     *\n# https://docs.vmware.com/en/VMware-Cloud-Assembly/services/Using-and-Managing/GUID-12F0BC64-6391-4E5F-AA48-C5959024F3EB.html\
+  \        *\n# https://blogs.vmware.com/management/2019/02/blueprinting-expressions-in-cloud-assembly.html\
+  \                                        *\n# There are some blueprint code examples\
+  \ here:                                                                        \
+  \               *\n# https://docs.vmware.com/en/VMware-Cloud-Assembly/services/Using-and-Managing/GUID-4717026E-D11A-48FE-93A9-E409A623C723.html\
+  \        *\n# This blueprint will deploy minimum of 3 Virtual Machines and run scripts\
+  \ to install packages.                                      *\n#*************************************************************************************************************************************\n\
+  name: Blueprint with Comments\n# Dont forget to give your blueprint a useful name!\n\
+  formatVersion: 1\nversion: 1\n# version is needed if you are going to source control\
+  \ the blueprint in GIT.\ninputs:\n  # Inputs section is where you define inputs\
+  \ that the user will be able to choose from at deployment time.\n  # There are a\
+  \ number of various methods by which we can present inputs to the user. Inputs can\
+  \ also influence\n  # placement decisions and configuration. There are a few examples\
+  \ below of various input types and how to use them.\n  platform:\n    type: string\n\
+  \    # The inputs section is where we list out our inputs that the user can choose\
+  \ from at deployment time.\n    title: Deploy to\n    oneOf:\n      # This particular\
+  \ section lists out the various cloud endpoints that the user can choose from. \n\
+  \      # The input variable will be referenced in the resources section. Title is\
+  \ what the user sees, const is the tag for the endpoints.\n      - title: AWS\n\
+  \        const: aws\n      - title: Azure\n        const: azure\n      - title:\
+  \ vSphere\n        const: vsphere\n    default: vsphere\n  image:\n    type: string\n\
+  \    #String with enumeration -enum , enum and oneOf are slightly differnet in that\
+  \ oneOf allows for a friendly title.\n    title: Operating System\n    description:\
+  \ Which OS to use\n    enum:\n      - Ubuntu\n      - Windows\n  # Common situation\
+  \ where you can list your various Flavor Mappings, if a user chooses Ubuntu and\
+  \ the \n  # system deploys to AWS for instance, then the AMI that is listed in Flavor\
+  \ Mapping \"Ubuntu\" would be chosen for AWS. \n  dbenvsize:\n    type: string\n\
+  \    enum:\n      - Small\n      - Large\n  Mtags:\n    type: array\n    # Array\
+  \ of objects - syntax: $'{['key1', 'key2']} , try clicking the Test button and you\
+  \ will see how the array appears to a user during deployment.\n    title: Tags\n\
+  \    description: tags to apply to machines\n    items:\n      type: object\n  \
+  \    properties:\n        key:\n          type: string\n          title: Key\n \
+  \       value:\n          type: string\n          title: Value\n  username:\n  \
+  \  type: string\n    # Inputs like username and password allow the user to define\
+  \ these parameters at request time.\n    # These types of inputs can also be helpful\
+  \ for configurations within cloud-init scripts, cloud-init is \n    # described\
+  \ below in the resources section of the blueprint.\n    minLength: 4\n    maxLength:\
+  \ 20\n    pattern: '[a-z]+'\n    title: Database Username\n    description: Database\
+  \ Username\n  userpassword:\n    type: string\n    pattern: '[a-z0-9A-Z@#$]+'\n\
+  \    encrypted: true\n    title: Database Password\n    description: Database Password\n\
+  \  databaseDiskSize:\n    type: number\n    # This input allows the user to choose\
+  \ the disk size.\n    default: 4\n    maximum: 10\n    title: MySQL Data Disk Size\n\
+  \    description: Size of database disk\n  clusterSize:\n    # This clusersize will\
+  \ be refernced in a count.index input below in WebTier. \n    # If a user chooses\
+  \ small from the dropdown then only 2 machines will be deployed.\n    type: string\n\
+  \    enum:\n      - small\n      - medium\n      - large\n    title: Wordpress Cluster\
+  \ Size\n    description: Wordpress Cluster Size\n  archiveDiskSize:\n    type: number\n\
+  \    default: 4\n    maximum: 10\n    title: Wordpress Archive Disk Size\n    description:\
+  \ Size of Wordpress archive disk\nresources:\n  # The resources section is where\
+  \ we configure the machines, networks, volumes and other objects that will get deployed.\n\
+  \  DBTier:\n    type: Cloud.Machine\n    metadata:\n      layoutPosition:\n    \
+  \    - 0\n        - 1\n    properties:\n      # Properties section is where parameterize\
+  \ and configure the resource. \n      name: mysql\n      # Name of virtual machine\n\
+  \      # Image and Flavor could also be variables and inputs as well. # Image Mapping\
+  \ from the Infrastructure tab, \n      # this is one way that vRA abstracts various\
+  \ \"clouds\" so the system can be cloud agnostic.\n      image: CloudImage\n   \
+  \   # Specifies the cloud image, depending on where the machine goes will determine\
+  \ what image is actually used across \n      # clouds. Pretty neat!\n      flavor:\
+  \ small\n      # Flavor Mapping - basically t-shrirt sizing for multi-cloud.\n \
+  \     constraints:\n        - tag: '${\"cloud:\" + to_lower(input.platform)}'\n\
+  \      # This constraint is using a tag that will specify the cloud, then lower\
+  \ case the input to match the tag case. \n      # there are other function operators\
+  \ besides to_lower, some of them are: to_upper, merge, trim, replace..\n      tags:\
+  \ '${input.Mtags}'\n      count: '${input.dbenvsize == \"Small\" ? 1 : 2}' # You\
+  \ can use conditions to determine things like size of the environment. \n      #\
+  \ In this example if you choose \"small\" then count = 1, if you choose the other\
+  \ option then it defaults to 2 machines. \n      # You could also do something like:\
+  \ '${input.count < 5 && input.size == 'small'} , or '${input.count < 2 ? \"small\"\
+  \ : \"large}'. \n      networks:\n        - name: '${resource.WP_Network.name}'\n\
+  \          #Resource variables let you bind to resource properties from other resources\
+  \ ex. - ${resource.app[0].id}\n          network: '${resource.WP_Network.id}'\n\
+  \      remoteAccess:\n        #remote access property enables you to specify a remote\
+  \ access mechanism for the deployed machine\n        authentication: usernamePassword\n\
+  \        username: '${input.username}'\n        password: '${input.userpassword}'\n\
+  \      ACMECorpID: 9333 #You can add custom properties to the YAML. Then these properties\
+  \ can be used to kick off an extensiblity subscription for instance. \n      # In\
+  \ the section below you will see a bit of code under a heading \"cloudConfig\",\
+  \ you can use cloud config to run commands in the Operating System of the machine\
+  \ , cross cloud. \n      # Examples include, setting a hostname, generating ssh\
+  \ private keys, installing packages.\n      # For more information on cloud-init\
+  \ - https://cloudinit.readthedocs.io/en/latest/\n      cloudConfig: |\n        #cloud-config\n\
+  \        repo_update: true\n        repo_upgrade: all\n\n        packages:\n   \
+  \      - mysql-server\n\n        runcmd:\n         - sed -e '/bind-address/ s/^#*/#/'\
+  \ -i /etc/mysql/mysql.conf.d/mysqld.cnf\n         - service mysql restart\n    \
+  \     - mysql -e \"GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'mysqlpassword';\"\
+  \n         - mysql -e \"FLUSH PRIVILEGES;\"\n      attachedDisks: []\n  WebTier:\n\
+  \    type: Cloud.Machine\n    metadata:\n      layoutPosition:\n        - 0\n  \
+  \      - 2\n    properties:\n      name: wordpress\n      # Name of the virtual\
+  \ machine\n      image: CloudImage\n      # Image Mapping from the Infrastructure\
+  \ tab, this is one way that vRA abstracts \"clouds\" and become more agnostic.\n\
+  \      flavor: small\n      # Flavor Mapping - basically t-shrirt sizing for multi-cloud.\n\
+  \      count: '${input.clusterSize== \"small\" ? 2 : (input.clusterSize == \"medium\"\
+  \ ? 3 : 4)}'\n      # This is a cluster count index example, the two options are\
+  \ small, medium and large clusters. Small deploys 2 machines,\n      # Medium deploys\
+  \ 3 machines , and it is implied that Large would deploy 4 machines so we do not\
+  \ need to specify large in the code\n      tags:\n        - key: cas.requestedBy\n\
+  \          value: '${env.requestedBy}' # Environmental variables can be helpful\
+  \ if you want to get info about the object displayed in the properties section of\
+  \ the deployment, other examples - {env.blueprintID}\n      ACMECorpID: 9333\n \
+  \     constraints:\n        - tag: '${\"cloud:\" + to_lower(input.platform)}' #\
+  \ This constaint will allow for the YAML to present a Upper-Case as display but\
+  \ the tags on the endpoints can be lower-case. \n      # This is important because\
+  \ the options in a list need to match the \"case\" of the tag.\n      networks:\n\
+  \        - name: '${resource.WP_Network.name}'\n          # This is a resource variable,\
+  \ lets you bind to resource properties from other resources, in this case the network\
+  \ that gets deployed.\n          network: '${resource.WP_Network.id}'\n      cloudConfig:\
+  \ |\n        #cloud-config\n        repo_update: true\n        repo_upgrade: all\n\
+  \n        packages:\n          - apache2\n          - php\n          - php-mysql\n\
+  \          - libapache2-mod-php\n          - php-mcrypt\n          - mysql-client\n\
+  \         \n        runcmd:\n          - mkdir -p /var/www/html/mywordpresssite\
+  \ && cd /var/www/html && wget https://wordpress.org/latest.tar.gz && tar -xzf /var/www/html/latest.tar.gz\
+  \ -C /var/www/html/mywordpresssite --strip-components 1\n          - i=0; while\
+  \ [ $i -le 5 ]; do mysql --connect-timeout=3 -h ${DBTier.networks[0].address} -u\
+  \ root -pmysqlpassword -e \"SHOW STATUS;\" && break || sleep 15; i=$((i+1)); done\n\
+  \          - mysql -u root -pmysqlpassword -h ${resource.DBTier.networks[0].address}\
+  \ -e \"create database wordpress_blog;\"\n          - mv /var/www/html/mywordpresssite/wp-config-sample.php\
+  \ /var/www/html/mywordpresssite/wp-config.php\n          - sed -i -e s/\"define('DB_NAME',\
+  \ 'database_name_here');\"/\"define('DB_NAME', 'wordpress_blog');\"/ /var/www/html/mywordpresssite/wp-config.php\
+  \ && sed -i -e s/\"define('DB_USER', 'username_here');\"/\"define('DB_USER', 'root');\"\
+  / /var/www/html/mywordpresssite/wp-config.php && sed -i -e s/\"define('DB_PASSWORD',\
+  \ 'password_here');\"/\"define('DB_PASSWORD', 'mysqlpassword');\"/ /var/www/html/mywordpresssite/wp-config.php\
+  \ && sed -i -e s/\"define('DB_HOST', 'localhost');\"/\"define('DB_HOST', '${resource.DBTier.networks[0].address}');\"\
+  / /var/www/html/mywordpresssite/wp-config.php\n          - service apache2 reload\n\
+  \  WP_Network:\n    type: Cloud.Network\n    metadata:\n      layoutPosition:\n\
+  \        - 1\n        - 0\n    properties:\n      name: WP_Network\n      networkType:\
+  \ existing\n# Parameter \"networkType\" selects an existing network in this case,\
+  \ you could also use a constraint tag to limit the network to a tagged network,\
+  \ for instance a \"PCI\" tagged network.\n# There are other networkTypes, e.g.,\
+  \ private or public. \n#****************************************************************************************************************************************************************\n\
+  # Blueprints via API - example, you can create blueprints etc, or you can query\
+  \ to get input schema you are intending to request:\n# GET https://api.mgmt.cloud.vmware.com/blueprint/api/blueprints/{blueprint_id}/inputs-schema\n\
+  # Link to the Swagger Docs: https://www.mgmt.cloud.vmware.com/blueprint/api/swagger/swagger-ui.html\n"
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/inputs-explained/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.676043Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id c3a06e5d9bd5e3e3597470615c6551e26c5f2eff.
+- Draft blueprint updated and version 1 created from git commit id c3a06e5d9bd5e3e3597470615c6551e26c5f2eff.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.674668Z'
+createdBy: system-user
+id: e883642d-579c-41b1-ac19-7671ff577c01
+name: Blueprint with Comments
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/e883642d-579c-41b1-ac19-7671ff577c01
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.676042Z'
+updatedBy: system-user
+valid: true

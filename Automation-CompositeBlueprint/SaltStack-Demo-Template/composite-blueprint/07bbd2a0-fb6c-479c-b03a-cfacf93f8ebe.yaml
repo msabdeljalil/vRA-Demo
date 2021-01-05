@@ -1,0 +1,55 @@
+content: |
+  formatVersion: 1
+  name: SaltStack-Demo-Template
+  version: 1
+  inputs:
+    hostname:
+      type: string
+  resources:
+    Cloud_Machine_1:
+      type: Cloud.Machine
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        image: Ubuntu-18-SSC
+        flavor: Medium
+        networks:
+          - network: '${resource.Cloud_Network_1.id}'
+        constraints:
+          - tag: 'env:vsphere'
+    Cloud_Network_1:
+      type: Cloud.Network
+      metadata:
+        layoutPosition:
+          - 1
+          - 0
+      properties:
+        networkType: existing
+        constraints:
+          - tag: 'env:vsphere'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/salt-demo/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:03.583437Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 1982a67aae8788203df05061633cb92eb874ff60.
+- Draft blueprint updated and version 1 created from git commit id 1982a67aae8788203df05061633cb92eb874ff60.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:03.582590Z'
+createdBy: system-user
+id: 07bbd2a0-fb6c-479c-b03a-cfacf93f8ebe
+name: SaltStack-Demo-Template
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/07bbd2a0-fb6c-479c-b03a-cfacf93f8ebe
+status: DRAFT
+totalReleasedVersions: 0
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:03.583436Z'
+updatedBy: system-user
+valid: true

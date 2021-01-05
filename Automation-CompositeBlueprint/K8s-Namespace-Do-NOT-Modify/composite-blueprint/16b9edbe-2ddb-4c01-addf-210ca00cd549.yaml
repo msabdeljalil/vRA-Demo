@@ -1,0 +1,53 @@
+content: |
+  formatVersion: 1
+  name: K8s-Namespace-Do-NOT-Modify
+  version: 1
+  inputs:
+    nsname:
+      type: string
+      pattern: '[a-z0-9]'
+      title: Enter Name for New Namespace
+      description: Namespace Name
+    environment:
+      type: string
+      enum:
+        - Dev
+        - Prod
+      default: Dev
+      title: Select Environment for New Namespace
+      description: Target Environment
+  resources:
+    Cloud_K8S_Namespace_1:
+      type: Cloud.K8S.Namespace
+      metadata:
+        layoutPosition:
+          - 0
+          - 0
+      properties:
+        name: '${input.nsname}'
+        constraints:
+          - tag: '${input.environment == "Prod" ? "k8s:prod" : "k8s:dev"}'
+contentSourceId: a562f474-dc8c-4f5d-856e-2f4b92d70517
+contentSourcePath: blueprints/k8s-namespace/blueprint.yaml
+contentSourceSyncAt: '2020-12-08T08:01:02.845967Z'
+contentSourceSyncMessages:
+- New draft, version(s) created
+- Draft blueprint created from git commit id 81aa2078c12afd985b43b433487bb057eb218639.
+- Draft blueprint updated and version 1 created from git commit id 81aa2078c12afd985b43b433487bb057eb218639.
+contentSourceSyncStatus: SUCCESSFUL
+contentSourceType: com.github
+createdAt: '2020-12-08T08:01:02.844843Z'
+createdBy: system-user
+id: 16b9edbe-2ddb-4c01-addf-210ca00cd549
+name: K8s-Namespace-Do-NOT-Modify
+orgId: 09323434-e96f-4366-8443-55b52e7d6182
+projectId: 30ba36ce-d2ca-495b-9f5f-8c0b5f37b29b
+projectName: Field Demo
+requestScopeOrg: false
+selfLink: /blueprint/api/blueprints/16b9edbe-2ddb-4c01-addf-210ca00cd549
+status: DRAFT
+totalReleasedVersions: 1
+totalVersions: 1
+updatedAt: '2020-12-08T08:01:02.845966Z'
+updatedBy: system-user
+valid: true

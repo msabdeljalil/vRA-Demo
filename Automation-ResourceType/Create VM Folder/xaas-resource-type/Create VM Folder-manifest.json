@@ -1,0 +1,13 @@
+{
+  "contentName": "Create VM Folder",
+  "uniqueId": "b656c2d0-6566-47f3-ad3b-3296bd58c895",
+  "contentType": "Automation-ResourceType",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": [  {
+    "contentName": "undefined",
+    "contentType": "Orchestrator-Package",
+    "files": [],
+    "keyValues": {},
+    "descendents": []
+  }]
+}

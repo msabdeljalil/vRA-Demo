@@ -1,0 +1,7 @@
+{
+  "contentName": "Deploy-OpenCart-Salt-Demo",
+  "uniqueId": "3cad3584-bfa0-4faf-9161-d1d92e454b9f",
+  "contentType": "Automation-CustomForm",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}

@@ -1,0 +1,7 @@
+{
+  "contentName": "SaltStack-Demo-Template",
+  "uniqueId": "07bbd2a0-fb6c-479c-b03a-cfacf93f8ebe",
+  "contentType": "Automation-CompositeBlueprint",
+  "keyValues": {"contentEndpointVersion": "8.x"},
+  "descendents": []
+}
